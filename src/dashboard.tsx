@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { sidebarLinks } from "./lib/sidebarLinks";
+import SidebarCollapsible from "./components/links";
 
 export default function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -35,7 +36,13 @@ export default function Dashboard() {
         </div>
         <nav>
           {sidebarLinks.map((link) => {
-            return (
+            return link.children ? (
+              <SidebarCollapsible
+                title={link.name}
+                Icon={link.icon}
+                links={link.children}
+              />
+            ) : (
               <Link
                 to={link.link}
                 key={link.link}

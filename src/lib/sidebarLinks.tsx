@@ -1,4 +1,4 @@
-import { Home } from "lucide-react";
+import { Home, PlusIcon } from "lucide-react";
 import { Component } from "lucide-react";
 
 export const sidebarLinks = [
@@ -10,6 +10,18 @@ export const sidebarLinks = [
   {
     name: "Resources",
     link: "/resources",
-    icon: <Component className="mr-2 h-4 w-4" />,
+    icon: Component,
+    children: [
+      {
+        name: "View Resources",
+        path: "/resources",
+        Icon: Component,
+      },
+      {
+        name: "Add Resource",
+        path: "/add-resource",
+        Icon: PlusIcon,
+      },
+    ],
   },
 ];
