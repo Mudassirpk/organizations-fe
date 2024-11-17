@@ -8,6 +8,7 @@ import AuthGuard from "@/guards/AuthGuard";
 import AddResource from "@/pages/Resources/AddResource";
 import ResourceDetails from "@/pages/Resources/ResourceDetails";
 import AddItem from "@/pages/Resources/AddItem";
+import EditResource from "@/pages/Resources/EditResource";
 
 export const router = createBrowserRouter([
   {
@@ -24,8 +25,11 @@ export const router = createBrowserRouter([
       { path: "/add-resource", element: <AddResource /> },
       { path: "/resource/:resourceId", element: <ResourceDetails /> },
       { path: "/resource/add-item/:resourceId", element: <AddItem /> },
+      { path: "/resource/edit/:resourceId", element: <EditResource /> },
       // --- Resource ---
+
     ].map((C) => {
+      // add auth guard to all protected routes
       return { ...C, element: <AuthGuard>{C.element}</AuthGuard> };
     }),
   },
