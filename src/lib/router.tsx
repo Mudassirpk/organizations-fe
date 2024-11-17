@@ -6,6 +6,8 @@ import SignUp from "@/pages/Signup.tsx";
 import SignIn from "@/pages/SignIn.tsx";
 import AuthGuard from "@/guards/AuthGuard";
 import AddResource from "@/pages/Resources/AddResource";
+import ResourceDetails from "@/pages/Resources/ResourceDetails";
+import AddItem from "@/pages/Resources/AddItem";
 
 export const router = createBrowserRouter([
   {
@@ -17,8 +19,12 @@ export const router = createBrowserRouter([
     ),
     children: [
       { path: "", element: <Home /> },
+      // --- Resource ---
       { path: "/resources", element: <Resources /> },
       { path: "/add-resource", element: <AddResource /> },
+      { path: "/resource/:resourceId", element: <ResourceDetails /> },
+      { path: "/resource/add-item/:resourceId", element: <AddItem /> },
+      // --- Resource ---
     ].map((C) => {
       return { ...C, element: <AuthGuard>{C.element}</AuthGuard> };
     }),

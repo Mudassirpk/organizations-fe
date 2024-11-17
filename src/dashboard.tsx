@@ -38,6 +38,7 @@ export default function Dashboard() {
           {sidebarLinks.map((link) => {
             return link.children ? (
               <SidebarCollapsible
+                key={link.name}
                 title={link.name}
                 Icon={link.icon}
                 links={link.children}

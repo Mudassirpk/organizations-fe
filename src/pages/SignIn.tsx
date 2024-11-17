@@ -22,6 +22,7 @@ export default function SignIn() {
   const [data, setData] = useState({
     email: "",
     password: "",
+    organizationId: "",
   });
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -38,6 +39,8 @@ export default function SignIn() {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         navigate("/");
+      } else {
+        toast.error(data.message);
       }
     },
   });
@@ -55,14 +58,15 @@ export default function SignIn() {
           <div className="flex items-center justify-center mb-4">
             <Layers className="h-8 w-8 text-blue-600" />
             <span className="text-2xl font-bold text-gray-800 ml-2">
-              CRM Pro
+              Organizations
             </span>
           </div>
           <CardTitle className="text-2xl font-bold text-center">
             Sign in to your account
           </CardTitle>
           <CardDescription className="text-center">
-            Enter your email and password to access your account
+            Enter your email, password and organization id to access your
+            account
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -74,6 +78,19 @@ export default function SignIn() {
               id="email"
               type="email"
               placeholder="john@example.com"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="email">Organization ID</Label>
+            <Input
+              value={data.organizationId}
+              onChange={(e) =>
+                setData({ ...data, organizationId: e.target.value })
+              }
+              id="organizationId"
+              type="organizationId"
+              placeholder="Your organization id"
               required
             />
           </div>

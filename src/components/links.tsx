@@ -39,7 +39,11 @@ export default function SidebarCollapsible({
       <CollapsibleContent className="ml-4 flex flex-col gap-2">
         {links.map((link) => {
           return (
-            <Link to={link.path} className="w-full flex gap-2 hover:bg-gray-50 p-2 items-center cursor-pointer justify-start pl-6">
+            <Link
+              key={link.name}
+              to={link.path}
+              className="w-full flex gap-2 hover:bg-gray-50 p-2 items-center cursor-pointer justify-start pl-6"
+            >
               <link.Icon className="mr-2 h-4 w-4" />
               {link.name}
             </Link>

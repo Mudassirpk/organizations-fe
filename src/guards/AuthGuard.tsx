@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/store/providers/authprovider";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -15,5 +16,5 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     }
   }, [naviate]);
 
-  return children;
+  return <AuthProvider>{children}</AuthProvider>;
 }
