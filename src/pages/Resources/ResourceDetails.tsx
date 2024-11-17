@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { TResource, TResourceAtom } from "types";
+import { TResource, TResourceAtom, TResourceAttribute } from "types";
 import {
   Table,
   TableBody,
@@ -61,8 +61,8 @@ export default function ResourceDetails() {
                   return (
                     <TableRow>
                       <TableCell>{ra.id}</TableCell>
-                      {Object.values(ra.data).map((v) => {
-                        return <TableCell>{v as string}</TableCell>;
+                      {data?.attributes.map((a: TResourceAttribute) => {
+                        return <TableCell>{ra.data[a.name] || ""}</TableCell>;
                       })}
                     </TableRow>
                   );
