@@ -37,8 +37,10 @@ export type TResource = {
 export type TResourceAttribute = {
   id: number;
   name: string;
-  type: "ALPHANUM" | "MEDIA"; // Extend with valid `type` values if needed
+  type: TAttributeType // Extend with valid `type` values if needed
   resourceId: number;
+  relationId?: number;
+  relationType?: TRelationType
 };
 
 export type TResourceAtom = {
@@ -46,3 +48,6 @@ export type TResourceAtom = {
   data: Record<string, string>; // A dynamic object with string keys and values
   resourceId: number;
 };
+
+export type TRelationType = 'OTO' | "OTM";
+export type TAttributeType = "ALPHANUM" | "MEDIA" | "RESOURCE";
