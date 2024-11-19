@@ -13,7 +13,7 @@ export default function Resources() {
     async queryFn() {
       return (
         await axios.get(
-          `http://localhost:3000/resource/${user?.user_organization[0].organization.id}`
+          `http://localhost:3000/resource/${user?.user_organization[0].organization.id}?attributes=true&atoms=true`
         )
       ).data;
     },
