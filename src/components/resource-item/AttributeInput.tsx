@@ -12,12 +12,16 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Loader from "../loader";
 import DropdownWithSearch, { TDropdownSelectItem } from "./SearchDropdown";
-import { useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 
 export default function AttributeInput({
   attribute,
+  setRelations,
 }: {
   attribute: TResourceAttribute;
+  setRelations: React.Dispatch<
+    SetStateAction<{ name: string; value: TDropdownSelectItem[] }[]>
+  >;
 }) {
   const [selectedItems, setSelectedItems] = useState<TDropdownSelectItem[]>([]);
   const [useAllResourceItems, setUseAllResourceItems] =
@@ -35,31 +39,58 @@ export default function AttributeInput({
     enabled: attribute.type === "RESOURCE",
   });
 
+  // update the relations
+  useEffect(() => {
+    if (useAllResourceItems) {
+      setRelations((prev) => prev.filter((p) => p.name !== attribute.name));
+      console.log(useAllResourceItems, attribute.name);
+    } else {
+      // remove the previously stored
+      setRelations((prev) => prev.filter((p) => p.name !== attribute.name));
+      // add updated
+      setRelations((prev) => [
+        ...prev,
+        { name: attribute.name, value: selectedItems },
+      ]);
+    }
+  }, [selectedItems, attribute.name, setRelations, useAllResourceItems]);
+
   return (
     <div key={attribute.id} className="space-y-2">
       <Label
         className="capitalize flex justify-between items-center"
         htmlFor={attribute.id.toString()}
       >
-        <span>{attribute.name}</span>{" "}
-        <label
-          htmlFor={attribute.name}
-          className={`flex gap-2 items-center cursor-pointer p-2 rounded border ${
-            useAllResourceItems && "border-blue-500"
-          }`}
-        >
-          {" "}
-          <span>Use all resource items</span>
-          <Input
-            id={attribute.name}
-            type="checkbox"
-            checked={useAllResourceItems}
-            onChange={(e) => {
-              setUseAllResourceItems(e.target.checked);
-            }}
-            className="w-5 h-5"
+        {useAllResourceItems && (
+          // value of default all will be picked for attribute if we are using all resource atoms
+          <input
+            type="text"
+            name={attribute.name}
+            value={"All"}
+            className="hidden"
           />
-        </label>
+        )}
+        <span>{attribute.name}</span>{" "}
+        {attribute.type === "RESOURCE" && attribute.relationType === "OTM" && (
+          <label
+            htmlFor={attribute.name}
+            className={`flex gap-2 items-center cursor-pointer p-2 rounded border ${
+              useAllResourceItems && "border-blue-500"
+            }`}
+          >
+            {" "}
+            <span>Use all resource items</span>
+            <Input
+              id={attribute.name}
+              type="checkbox"
+              checked={useAllResourceItems}
+              onChange={(e) => {
+                setUseAllResourceItems(e.target.checked);
+              }}
+              className="w-5 h-5"
+            />
+          </label>
+        )}
       </Label>
       {attribute.type === "RESOURCE" ? (
         isFetching ? (
