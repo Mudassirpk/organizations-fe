@@ -24,13 +24,11 @@ export default function ResourceDetails() {
     async queryFn() {
       return (
         await axios.get(
-          `http://localhost:3000/resource/by-id/${params.resourceId}`
+          `http://localhost:3000/resource/by-id/${params.resourceId}?atoms=true&attributes=true`
         )
       ).data;
     },
   });
-
-  console.log('data: ', data)
 
   return (
     <div className="w-full p-4">
@@ -66,12 +64,23 @@ export default function ResourceDetails() {
                     <TableRow>
                       <TableCell>{ra.id}</TableCell>
                       {data?.attributes.map((a: TResourceAttribute) => {
-                        return <TableCell>{a.type === 'RESOURCE' ?
-                          <Link to={`/resource/${a.relationId}`} className="bg-gray-500 text-white px-2 py-1 rounded max-w-max flex gap-2 items-center">
-                            <ExternalLink className="text-sm" />
-                            <span className="text-lg font-semibold">{a.name}</span>
-                          </Link> : ra.data[a.name] || ""}
-                        </TableCell>;
+                        return (
+                          <TableCell>
+                            {a.type === "RESOURCE" ? (
+                              <Link
+                                to={`/resource/${a.relationId}`}
+                                className="bg-gray-500 text-white px-2 py-1 rounded max-w-max flex gap-2 items-center"
+                              >
+                                <ExternalLink className="text-sm" />
+                                <span className="text-lg font-semibold">
+                                  {a.name}
+                                </span>
+                              </Link>
+                            ) : (
+                              ra.data[a.name] || ""
+                            )}
+                          </TableCell>
+                        );
                       })}
                     </TableRow>
                   );
