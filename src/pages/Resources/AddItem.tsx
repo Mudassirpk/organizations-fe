@@ -41,7 +41,7 @@ export default function AddItem() {
               e.preventDefault();
               const data = Object.fromEntries(new FormData(e.currentTarget));
               const values = [];
-              for (let v of Object.keys(data)) {
+              for (const v of Object.keys(data)) {
                 values.push({
                   name: v,
                   value: data[v],
@@ -52,9 +52,12 @@ export default function AddItem() {
             }}
             className="my-4 flex flex-col gap-2"
           >
-            {data?.attributes.map((attribute) => {
+            {data?.attributes.map((attribute,i:number) => {
               return (
-                <AttributeInput attribute={attribute} />
+                <>
+                  <AttributeInput attribute={attribute} />
+                  {i!==data?.attributes.length-1 && <p className="w-full border-b my-2"></p>}
+                </>
               );
             })}
             <Button type="submit">Add {data?.name}</Button>
