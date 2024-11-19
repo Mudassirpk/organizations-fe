@@ -16,18 +16,20 @@ import { Plus, SquareX } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
-import { TResource } from "types";
+import { TAttributeType, TRelationType, TResource } from "types";
 
 export default function EditResource() {
-  const { user } = useAuth();
+  const { user } = useAuth()
   const params = useParams();
   const [name, setName] = useState<string>("");
   const [attributes, setAttributes] = useState<
     {
       name: string;
-      type: "ALPHANUM" | "MEDIA";
+      type: TAttributeType;
       id?: number;
       delete?: boolean;
+      relationType?: TRelationType,
+      relationId?: number
     }[]
   >([]);
 
@@ -64,6 +66,13 @@ export default function EditResource() {
     },
   });
 
+  const { data: resources, isFetching: fetchingResources } = useQuery<TResource[]>({
+    queryKey: ['resources-for-select'],
+    async queryFn() {
+      return (await axios.get(`http://localhost:3000/resource/${user?.user_organization[0].organizationId}`)).data
+    }
+  })
+
   const { data: resourceToEdit, isFetching: fetchingResourceToEdit } =
     useQuery<TResource>({
       queryKey: ["get-resource-to-edit"],
@@ -85,6 +94,8 @@ export default function EditResource() {
             name: attribute.name,
             type: attribute.type,
             id: attribute.id,
+            relationId: attribute.relationId,
+            relationType: attribute.relationType
           };
         })
       );
@@ -118,13 +129,14 @@ export default function EditResource() {
 
           <p className="w-full font-semibold text-xl my-2">Attributes</p>
           {attributes.map((attribute, attribute_index) => {
+            console.log('at: ', attribute.type)
             return (
               !attribute.delete && (
                 <div
                   key={attribute_index}
                   className="space-y-2 flex gap-2 items-center"
                 >
-                  <div className="w-full flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+                  <div className={`w-full flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center ${attribute_index !== attributes.length && 'border-b pb-4'}`}>
                     <div>
                       <span>Name</span>
                       <Input
@@ -170,9 +182,76 @@ export default function EditResource() {
                           <SelectItem value="MEDIA" disabled>
                             Media (video, image, file, or a document)
                           </SelectItem>
+                          <SelectItem value="RESOURCE" disabled>
+                            Relation to other resources
+                          </SelectItem>
                         </SelectContent>
                       </Select>
-                    </div>
+                    </div>{attribute.type && attribute.type === 'RESOURCE' && <div>
+                      <div>
+                        <span>Relation Type</span>
+                        <Select
+                          value={attribute.relationType}
+                          onValueChange={(e) => {
+                            setAttributes((prev) => {
+                              return prev.map((p, index: number) => {
+                                if (attribute_index === index) {
+                                  p = { ...p, relationType: e as any, relationId: undefined };
+                                }
+                                return p;
+                              });
+                            });
+                          }}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Relation Type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="OTO">
+                              One To One
+                            </SelectItem>
+                            <SelectItem value="OTM">
+                              One To Many
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>}
+                    {
+                      attribute.relationType && <div>
+                        {fetchingResources ? <Loader /> :
+                          <div>
+                            <span>Resource</span>
+                            <Select
+                              value={attribute.relationId?.toString()}
+                              onValueChange={(e) => {
+                                setAttributes((prev) => {
+                                  return prev.map((p, index: number) => {
+                                    if (attribute_index === index) {
+                                      p = { ...p, relationId: parseInt(e) };
+                                    }
+                                    return p;
+                                  });
+                                });
+                              }}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Choose Resource" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {
+                                  resources?.filter(r => r.name !== name).map(resource => {
+                                    return <SelectItem value={resource.id.toString()}>
+                                      {resource.name}
+                                    </SelectItem>
+                                  })
+                                }
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        }
+                      </div>
+                    }
                   </div>
                   <SquareX
                     onClick={() => {
