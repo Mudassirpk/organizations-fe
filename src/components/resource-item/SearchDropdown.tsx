@@ -26,7 +26,6 @@ const DropdownWithSearch = ({
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const handleItemToggle = (item: TDropdownSelectItem) => {
-    console.log("ii: ", item);
     setSelectedItems((prevSelectedItems) =>
       prevSelectedItems.find((i) => i.value === item.value)
         ? prevSelectedItems.filter((i) => i.value !== item.value)
@@ -69,7 +68,6 @@ const DropdownWithSearch = ({
       <Select
         disabled={disabled}
         onValueChange={(e) => {
-          console.log("selected: ", e);
           const v = items.find((i) => i.value === e);
           if (v) handleItemToggle(v);
         }}
