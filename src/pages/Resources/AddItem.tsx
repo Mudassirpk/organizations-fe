@@ -1,6 +1,5 @@
+import AttributeInput from "@/components/resource-item/AttributeInput";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useParams } from "react-router-dom";
@@ -13,7 +12,7 @@ export default function AddItem() {
     async queryFn() {
       return (
         await axios.get(
-          `http://localhost:3000/resource/by-id/${params.resourceId}`
+          `http://localhost:3000/resource/by-id/${params.resourceId}?atoms=true&attributes=true`
         )
       ).data;
     },
@@ -25,6 +24,10 @@ export default function AddItem() {
         .data;
     },
   });
+
+  // const {data} = useQuery({
+  //   queryKey:'relation_resource_atom',
+  // })
 
   return (
     <div className="w-full p-4">
@@ -51,21 +54,7 @@ export default function AddItem() {
           >
             {data?.attributes.map((attribute) => {
               return (
-                <div key={attribute.id} className="space-y-2">
-                  <Label
-                    className="capitalize"
-                    htmlFor={attribute.id.toString()}
-                  >
-                    {attribute.name}
-                  </Label>
-                  <Input
-                    name={attribute.name}
-                    id={attribute.id.toString()}
-                    type="organizationId"
-                    placeholder={attribute.name}
-                    required
-                  />
-                </div>
+                <AttributeInput attribute={attribute} />
               );
             })}
             <Button type="submit">Add {data?.name}</Button>
