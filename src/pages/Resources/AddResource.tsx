@@ -1,3 +1,4 @@
+import Loader from "@/components/loader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,18 +10,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/store/contexts/context";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Plus, SquareX } from "lucide-react";
 import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
+import { TResource } from "types";
 
 export default function AddResource() {
   const { user } = useAuth();
 
+
+
   const [name, setName] = useState<string>("");
   const [attributes, setAttributes] = useState<
-    { name: string; type: "ALPHANUM" | "MEDIA" }[]
+    { name: string; type: "ALPHANUM" | "MEDIA" | "RESOURCE", relationType?: "OTM" | "OTO", relationId?: number }[]
   >([{ name: "", type: "ALPHANUM" }]);
 
   const { mutate, status } = useMutation({
@@ -56,6 +60,13 @@ export default function AddResource() {
     mutate();
   }
 
+  const { data: resources, isFetching: fetchingResources } = useQuery<TResource[]>({
+    queryKey: ['resources-for-select'],
+    async queryFn() {
+      return (await axios.get(`http://localhost:3000/resource/${user?.user_organization[0].organizationId}`)).data
+    }
+  })
+
   return (
     <div className="w-full">
       <h2 className="font-semibold text-2xl text-gray-700">Add Resource</h2>
@@ -77,7 +88,7 @@ export default function AddResource() {
           return (
             <div
               key={attribute_index}
-              className="space-y-2 flex gap-2 items-center"
+              className={`space-y-2 flex gap-2 items-center ${attribute_index !== (attributes.length - 1) && "border-b pb-4"}`}
             >
               <div className="w-full flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
                 <div>
@@ -108,7 +119,7 @@ export default function AddResource() {
                       setAttributes((prev) => {
                         return prev.map((p, index: number) => {
                           if (attribute_index === index) {
-                            p = { ...p, type: e as any };
+                            p = { ...p, type: e as any, relationId: undefined, relationType: undefined };
                           }
                           return p;
                         });
@@ -125,9 +136,77 @@ export default function AddResource() {
                       <SelectItem value="MEDIA" disabled>
                         Media (video, image, file, or a document)
                       </SelectItem>
+                      <SelectItem value="RESOURCE">
+                        Relation to other resouce
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
+                {attribute.type && attribute.type === 'RESOURCE' && <div>
+                  <div>
+                    <span>Relation Type</span>
+                    <Select
+                      value={attribute.relationType}
+                      onValueChange={(e) => {
+                        setAttributes((prev) => {
+                          return prev.map((p, index: number) => {
+                            if (attribute_index === index) {
+                              p = { ...p, relationType: e as any, relationId: undefined };
+                            }
+                            return p;
+                          });
+                        });
+                      }}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Relation Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="OTO">
+                          One To One
+                        </SelectItem>
+                        <SelectItem value="OTM">
+                          One To Many
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>}
+                {
+                  attribute.relationType && <div>
+                    {fetchingResources ? <Loader /> :
+                      <div>
+                        <span>Resource</span>
+                        <Select
+                          value={attribute.relationId?.toString()}
+                          onValueChange={(e) => {
+                            setAttributes((prev) => {
+                              return prev.map((p, index: number) => {
+                                if (attribute_index === index) {
+                                  p = { ...p, relationId: parseInt(e) };
+                                }
+                                return p;
+                              });
+                            });
+                          }}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Choose Resource" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {
+                              resources?.filter(r => r.name !== name).map(resource => {
+                                return <SelectItem value={resource.id.toString()}>
+                                  {resource.name}
+                                </SelectItem>
+                              })
+                            }
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    }
+                  </div>
+                }
               </div>
               <SquareX
                 onClick={() => {
