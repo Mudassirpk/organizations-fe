@@ -1,50 +1,13 @@
-# React + TypeScript + Vite
+# Organizations (User Friendly Headless CMS)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Why another CMS?
 
-Currently, two official plugins are available:
+The CMS systems around the world are doing great job for different users, but what if there is a much simpler, easier to use and configure CMS for you, so that you get you App/MVP to the users ASAP. that's what Organizations CMS does it remove all complex layers of interactions and provides an intuitive interface to work with.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Goals
 
-## Expanding the ESLint configuration
+The biggest goal for any CMS is to be able to get along with any kind of frontend. Organizations keeps the same goal and hopes to provide a platform to frontend developer and designers to easily get started with thier ideas.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Scallability?
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+As we all know that at time when applications grow people just want to move towards cloud like AWS or any other cloud where they want to have a separate database and a backend for ther product, that's why we are working on a feature to export all the data and processes in a standard format so, at any stage of your product's lifecycle you can move away from the CMS gracefully.
