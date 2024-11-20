@@ -19,7 +19,7 @@ import { useParams } from "react-router-dom";
 import { TAttributeType, TRelationType, TResource } from "types";
 
 export default function EditResource() {
-  const { user } = useAuth()
+  const { user } = useAuth();
   const params = useParams();
   const [name, setName] = useState<string>("");
   const [attributes, setAttributes] = useState<
@@ -28,8 +28,8 @@ export default function EditResource() {
       type: TAttributeType;
       id?: number;
       delete?: boolean;
-      relationType?: TRelationType,
-      relationId?: number
+      relationType?: TRelationType;
+      relationId?: number;
     }[]
   >([]);
 
@@ -66,12 +66,18 @@ export default function EditResource() {
     },
   });
 
-  const { data: resources, isFetching: fetchingResources } = useQuery<TResource[]>({
-    queryKey: ['resources-for-select'],
+  const { data: resources, isFetching: fetchingResources } = useQuery<
+    TResource[]
+  >({
+    queryKey: ["resources-for-select"],
     async queryFn() {
-      return (await axios.get(`http://localhost:3000/resource/${user?.user_organization[0].organizationId}`)).data
-    }
-  })
+      return (
+        await axios.get(
+          `http://localhost:3000/resource/${user?.user_organization[0].organizationId}`
+        )
+      ).data;
+    },
+  });
 
   const { data: resourceToEdit, isFetching: fetchingResourceToEdit } =
     useQuery<TResource>({
@@ -79,7 +85,7 @@ export default function EditResource() {
       async queryFn() {
         return (
           await axios.get(
-            "http://localhost:3000/resource/by-id/" + params.resourceId
+            `http://localhost:3000/resource/by-id/${params.resourceId}?attributes=true&atoms=true`
           )
         ).data;
       },
@@ -95,7 +101,7 @@ export default function EditResource() {
             type: attribute.type,
             id: attribute.id,
             relationId: attribute.relationId,
-            relationType: attribute.relationType
+            relationType: attribute.relationType,
           };
         })
       );
@@ -129,14 +135,15 @@ export default function EditResource() {
 
           <p className="w-full font-semibold text-xl my-2">Attributes</p>
           {attributes.map((attribute, attribute_index) => {
-            console.log('at: ', attribute.type)
             return (
               !attribute.delete && (
-                <div
-                  key={attribute_index}
-                  className="space-y-2 flex gap-2 items-center"
-                >
-                  <div className={`w-full flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center ${attribute_index !== attributes.length && 'border-b pb-4'}`}>
+                <>
+                  <div
+                    className={`w-full flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center ${
+                      attribute_index !== attributes.length - 1 &&
+                      "border-b pb-6"
+                    } ${attribute_index > 0 && "pt-4"}`}
+                  >
                     <div>
                       <span>Name</span>
                       <Input
@@ -187,86 +194,100 @@ export default function EditResource() {
                           </SelectItem>
                         </SelectContent>
                       </Select>
-                    </div>{attribute.type && attribute.type === 'RESOURCE' && <div>
-                      <div>
-                        <span>Relation Type</span>
-                        <Select
-                          value={attribute.relationType}
-                          onValueChange={(e) => {
-                            setAttributes((prev) => {
-                              return prev.map((p, index: number) => {
-                                if (attribute_index === index) {
-                                  p = { ...p, relationType: e as any, relationId: undefined };
-                                }
-                                return p;
-                              });
-                            });
-                          }}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Relation Type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="OTO">
-                              One To One
-                            </SelectItem>
-                            <SelectItem value="OTM">
-                              One To Many
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>}
-                    {
-                      attribute.relationType && <div>
-                        {fetchingResources ? <Loader /> :
-                          <div>
-                            <span>Resource</span>
-                            <Select
-                              value={attribute.relationId?.toString()}
-                              onValueChange={(e) => {
-                                setAttributes((prev) => {
-                                  return prev.map((p, index: number) => {
-                                    if (attribute_index === index) {
-                                      p = { ...p, relationId: parseInt(e) };
-                                    }
-                                    return p;
-                                  });
+                    </div>
+                    {attribute.type && attribute.type === "RESOURCE" && (
+                      <>
+                        <div>
+                          <span>Relation Type</span>
+                          <Select
+                            value={attribute.relationType}
+                            onValueChange={(e) => {
+                              setAttributes((prev) => {
+                                return prev.map((p, index: number) => {
+                                  if (attribute_index === index) {
+                                    p = {
+                                      ...p,
+                                      relationType: e as any,
+                                      relationId: undefined,
+                                    };
+                                  }
+                                  return p;
                                 });
-                              }}
-                            >
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Choose Resource" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {
-                                  resources?.filter(r => r.name !== name).map(resource => {
-                                    return <SelectItem value={resource.id.toString()}>
-                                      {resource.name}
-                                    </SelectItem>
-                                  })
-                                }
-                              </SelectContent>
-                            </Select>
+                              });
+                            }}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Relation Type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="OTO">One To One</SelectItem>
+                              <SelectItem value="OTM">One To Many</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {attribute.relationType && (
+                          <div>
+                            {fetchingResources ? (
+                              <Loader />
+                            ) : (
+                              <div>
+                                <span>Resource</span>
+                                <Select
+                                  value={attribute.relationId?.toString()}
+                                  onValueChange={(e) => {
+                                    setAttributes((prev) => {
+                                      return prev.map((p, index: number) => {
+                                        if (attribute_index === index) {
+                                          p = { ...p, relationId: parseInt(e) };
+                                        }
+                                        return p;
+                                      });
+                                    });
+                                  }}
+                                >
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Choose Resource" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {resources
+                                      ?.filter((r) => r.name !== name)
+                                      .map((resource) => {
+                                        return (
+                                          <SelectItem
+                                            value={resource.id.toString()}
+                                          >
+                                            {resource.name}
+                                          </SelectItem>
+                                        );
+                                      })}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            )}
                           </div>
-                        }
+                        )}
+                      </>
+                    )}{" "}
+                    <div className="w-full col-span-2 flex justify-end gap-2 items-center">
+                      <div
+                        onClick={() => {
+                          setAttributes((prev) =>
+                            prev.map((_p, i: number) => {
+                              if (i === attribute_index) {
+                                _p.delete = true;
+                              }
+                              return _p;
+                            })
+                          );
+                        }}
+                        className="flex gap-2 items-center p-1 rounded border border-red-600 cursor-pointer"
+                      >
+                        <SquareX className="text-2xl cursor-pointer hover:text-red-500 text-red-600" />
+                        <span>Delete Attribute</span>
                       </div>
-                    }
+                    </div>
                   </div>
-                  <SquareX
-                    onClick={() => {
-                      setAttributes((prev) =>
-                        prev.map((_p, i: number) => {
-                          if (i === attribute_index) {
-                            _p.delete = true;
-                          }
-                          return _p;
-                        })
-                      );
-                    }}
-                    className="text-2xl cursor-pointer hover:text-red-500 text-red-600"
-                  />
-                </div>
+                </>
               )
             );
           })}
