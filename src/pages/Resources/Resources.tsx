@@ -23,17 +23,17 @@ export default function Resources() {
 
   return (
     <div>
-      <div className="w-full flex justify-between items-center">
+      <div className="w-full flex justify-between py-2 sm:py-0 items-center">
         <h2 className="text-gray-700 text-2xl font-semibold">Resources</h2>
         <Link
           to={"/add-resource"}
-          className="bg-blue-600 text-white rounded-md py-2 px-4 hover:bg-blue-500"
+          className="bg-blue-600 text-white rounded-md py-2 text-[14px] px-2 hover:bg-blue-500"
         >
           Add new resource
         </Link>
       </div>
-
-      <div className="w-full p-4 grid gap-2 grid-cols-4">
+      <div className="my-2 border-t w-full visible sm:hidden"></div>
+      <div className="w-full p-2 sm:p-4 grid gap-2 grid-cols-1 sm:grid-cols-4">
         {isFetching ? (
           <p>Loading.....</p>
         ) : (
