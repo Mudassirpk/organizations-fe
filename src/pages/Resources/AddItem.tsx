@@ -59,7 +59,6 @@ export default function AddItem() {
         value: data[v],
       });
     }
-
     if (params.resourceId)
       mutate({ values, resource: parseInt(params.resourceId) });
   }
@@ -76,6 +75,7 @@ export default function AddItem() {
               return (
                 <>
                   <AttributeInput
+                    relations={relations}
                     setRelations={setRelations}
                     attribute={attribute}
                   />
