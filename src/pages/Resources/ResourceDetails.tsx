@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { TResource, TResourceAtom, TResourceAttribute } from "types";
+import { TResource, TResourceAtom } from "types";
 import {
   Table,
   TableBody,
@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Link } from "react-router-dom";
-import { ExternalLink } from "lucide-react";
+import ResourceAtomRow from "@/components/resources/resourceAtomRow";
 
 export default function ResourceDetails() {
   const params = useParams();
@@ -56,33 +56,13 @@ export default function ResourceDetails() {
                       <TableCell key={attribute.id}>{attribute.name}</TableCell>
                     );
                   })}
+                  <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data?.resource_atom.map((ra) => {
+                {data?.resource_atom.map((ra: TResourceAtom) => {
                   return (
-                    <TableRow>
-                      <TableCell>{ra.id}</TableCell>
-                      {data?.attributes.map((a: TResourceAttribute) => {
-                        return (
-                          <TableCell>
-                            {a.type === "RESOURCE" ? (
-                              <Link
-                                to={`/resource/${a.relationId}`}
-                                className="bg-gray-500 text-white px-2 py-1 rounded max-w-max flex gap-2 items-center"
-                              >
-                                <ExternalLink className="text-sm" />
-                                <span className="text-lg font-semibold">
-                                  {a.name}
-                                </span>
-                              </Link>
-                            ) : (
-                              ra.data[a.name] || ""
-                            )}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
+                    <ResourceAtomRow ra={ra} attributes={data?.attributes} />
                   );
                 })}
               </TableBody>
