@@ -1,4 +1,3 @@
-import { useModal } from "@/store/contexts/modalcontext";
 import {
   Dialog,
   DialogContent,
@@ -7,17 +6,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
+import { SetStateAction } from "react";
 
 type Props = {
   title: string;
   triggerTitle: string;
   description?: string;
   children: React.ReactNode;
+  open: boolean;
+  setOpen: React.Dispatch<SetStateAction<boolean>>;
 };
 
-function Modal({ title, description, children, triggerTitle }: Props) {
-  const { open, setOpen } = useModal();
-
+function Modal({
+  title,
+  description,
+  children,
+  triggerTitle,
+  open,
+  setOpen,
+}: Props) {
   return (
     <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
       <DialogTrigger>{triggerTitle}</DialogTrigger>
