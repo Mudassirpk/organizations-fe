@@ -90,7 +90,12 @@ const DropdownWithSearch = ({
                   <div className="w-full flex items-center space-x-2 px-3 py-2 cursor-pointer hover:bg-gray-100">
                     <Checkbox
                       checked={
-                        selectedItems.find((i) => i.value === item.value)
+                        selectedItems.find((i) => {
+                          return (
+                            (i.value as string | number).toString() ===
+                            item.value
+                          );
+                        })
                           ? true
                           : false
                       }
@@ -98,7 +103,10 @@ const DropdownWithSearch = ({
                     <p className="flex w-full gap-2 items-center">
                       {item.label.split("-").map((l) => {
                         return (
-                          <span className="py-1 px-2 rounded bg-blue-500/20 text-blue-600">
+                          <span
+                            key={l}
+                            className="py-1 px-2 rounded bg-blue-500/20 text-blue-600"
+                          >
                             {l}
                           </span>
                         );

@@ -13,17 +13,32 @@ import axios from "axios";
 import Loader from "../loader";
 import DropdownWithSearch, { TDropdownSelectItem } from "./SearchDropdown";
 import { SetStateAction, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 export default function AttributeInput({
   attribute,
   setRelations,
+  initialValue,
+  setInitialValues,
+  mode,
+  relations,
 }: {
   attribute: TResourceAttribute;
   setRelations: React.Dispatch<
     SetStateAction<{ name: string; value: TDropdownSelectItem[] }[]>
   >;
+  initialValue?: { name: string; value: string };
+  setInitialValues?: React.Dispatch<
+    SetStateAction<{ name: string; value: string }[]>
+  >;
+  mode?: "edit" | "add";
+  relations: { name: string; value: TDropdownSelectItem[] }[];
 }) {
-  const [selectedItems, setSelectedItems] = useState<TDropdownSelectItem[]>([]);
+  const params = useParams();
+
+  const [selectedItems, setSelectedItems] = useState<TDropdownSelectItem[]>(
+    mode === "edit" ? relations && relations.map((r) => r.value).flat() : []
+  );
   const [useAllResourceItems, setUseAllResourceItems] =
     useState<boolean>(false);
 
@@ -32,7 +47,7 @@ export default function AttributeInput({
     async queryFn() {
       return (
         await axios.get(
-          `http://localhost:3000/resource/by-id/${attribute.relationId}?atoms=true`
+          `http://localhost:3000/resource/by-id/${params.resourceId}?atoms=true`
         )
       ).data;
     },
@@ -41,19 +56,25 @@ export default function AttributeInput({
 
   // update the relations
   useEffect(() => {
-    if (useAllResourceItems) {
-      setRelations((prev) => prev.filter((p) => p.name !== attribute.name));
-      console.log(useAllResourceItems, attribute.name);
-    } else {
-      // remove the previously stored
-      setRelations((prev) => prev.filter((p) => p.name !== attribute.name));
-      // add updated
-      setRelations((prev) => [
-        ...prev,
-        { name: attribute.name, value: selectedItems },
-      ]);
+    if (attribute.type === "RESOURCE") {
+      if (useAllResourceItems) {
+        setRelations((prev) => prev.filter((p) => p.name !== attribute.name));
+      } else {
+        // add updated
+        if (selectedItems.length > 0) {
+          setRelations((prev) => {
+            return prev.map((p) => {
+              if (p.name === attribute.name) {
+                p = { ...p, value: selectedItems };
+              }
+
+              return p;
+            });
+          });
+        }
+      }
     }
-  }, [selectedItems, attribute.name, setRelations, useAllResourceItems]);
+  }, [selectedItems, useAllResourceItems]);
 
   return (
     <div key={attribute.id} className="space-y-2">
@@ -74,7 +95,7 @@ export default function AttributeInput({
         {attribute.type === "RESOURCE" && attribute.relationType === "OTM" && (
           <label
             htmlFor={attribute.name}
-            className={`flex gap-2 items-center cursor-pointer p-2 rounded border ${
+            className={`flex gap-2 items-center hover:border-blue-500 cursor-pointer p-2 rounded border ${
               useAllResourceItems && "border-blue-500"
             }`}
           >
@@ -145,7 +166,7 @@ export default function AttributeInput({
                     ra.id.toString() +
                     "-" +
                     Object.keys(ra.data)
-                      .map((k) => `${k} : ${ra.data[k]}`)
+                      .map((k) => `${k}-${ra.data[k]}`)
                       .join("-"),
                   value: ra.id.toString(),
                 };
@@ -153,11 +174,30 @@ export default function AttributeInput({
             }
           />
         )
+      ) : mode && mode === "edit" && initialValue && setInitialValues ? (
+        <Input
+          value={initialValue.value}
+          onChange={(e) => {
+            setInitialValues((prev) => {
+              return prev.map((p) => {
+                if (p.name === initialValue.name) {
+                  p.value = e.target.value;
+                }
+                return p;
+              });
+            });
+          }}
+          name={attribute.name}
+          id={attribute.id.toString()}
+          type="text"
+          placeholder={attribute.name}
+          required
+        />
       ) : (
         <Input
           name={attribute.name}
           id={attribute.id.toString()}
-          type="organizationId"
+          type="text"
           placeholder={attribute.name}
           required
         />
