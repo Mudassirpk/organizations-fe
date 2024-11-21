@@ -32,12 +32,12 @@ export default function AttributeInput({
     SetStateAction<{ name: string; value: string }[]>
   >;
   mode?: "edit" | "add";
-  relations: { name: string; value: TDropdownSelectItem[] }[];
+  relations?: { name: string; value: TDropdownSelectItem[] }[];
 }) {
   const params = useParams();
 
   const [selectedItems, setSelectedItems] = useState<TDropdownSelectItem[]>(
-    mode === "edit" ? relations && relations.map((r) => r.value).flat() : []
+    mode === "edit" && relations ? relations?.map((r) => r.value).flat() : []
   );
   const [useAllResourceItems, setUseAllResourceItems] =
     useState<boolean>(false);
