@@ -1,4 +1,4 @@
-import { SetStateAction, useEffect, useState } from "react";
+import { SetStateAction, useState } from "react";
 import {
   Select,
   SelectTrigger,
@@ -33,10 +33,6 @@ const DropdownWithSearch = ({
     );
   };
 
-  useEffect(() => {
-    console.log(selectedItems);
-  }, [selectedItems]);
-
   const filteredItems = items.filter((item) =>
     item.label
       .toLowerCase()
@@ -47,17 +43,41 @@ const DropdownWithSearch = ({
   return (
     <div className="p-4">
       {/* Container for selected items */}
-      <div className="mb-4">
+      <div className="mb-4 p-2 border">
         {selectedItems.length > 0 ? (
           <div className="flex gap-2 flex-wrap">
-            {selectedItems.map((item, index) => (
-              <span
-                key={index}
-                className="bg-gray-200 px-3 py-1 rounded-full text-sm text-gray-700"
-              >
-                {item.label}
-              </span>
-            ))}
+            {selectedItems.map((item, index) => {
+              const id_splitted = item.label.replace("-", " ").split(" ");
+              const id = id_splitted[0];
+              return (
+                <div key={item.label} className="flex items-center">
+                  <span
+                    key={index}
+                    className="bg-blue-200 px-3 py-1 rounded-tl-full rounded-bl-full text-sm text-blue-700"
+                  >
+                    {id}
+                  </span>
+                  <span>
+                    {id_splitted
+                      .slice(1, id_splitted.length)
+                      .join()
+                      .split("-")
+                      .map((i) => {
+                        return (
+                          <span key={i} className="mx-2">
+                            <span className="rounded-tl p-1 rounded-bl bg-blue-600 text-white">
+                              {i.split("|")[0]}
+                            </span>
+                            <span className="rounded-tr p-1 rounded-br bg-gray-800 text-white">
+                              {i.split("|")[1]}
+                            </span>
+                          </span>
+                        );
+                      })}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         ) : (
           <span className="text-gray-500">No items selected</span>

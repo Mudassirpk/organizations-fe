@@ -2,10 +2,10 @@ import Loader from "@/components/loader";
 import AttributeInput from "@/components/resource-item/AttributeInput";
 import { TDropdownSelectItem } from "@/components/resource-item/SearchDropdown";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { queryClient } from "@/lib/query_client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
@@ -13,6 +13,7 @@ import { TResource, TResourceAtom, TResourceAttribute } from "types";
 
 export default function EditItem() {
   const params = useParams();
+  const [relationsSet, setRelationsSet] = useState(false);
 
   const [relations, setRelations] = useState<
     { name: string; value: TDropdownSelectItem[] }[]
@@ -45,12 +46,43 @@ export default function EditItem() {
     },
   });
 
-  // const {data} = useQuery({
-  //   queryKey:'relation_resource_atom',
-  // })
+  const { mutate, status } = useMutation({
+    async mutationFn(data: unknown) {
+      return (
+        await axios.put(`http://localhost:3000/atom/${params.atomId}`, data)
+      ).data;
+    },
+    onSuccess(response) {
+      if (response.success) {
+        toast.success(response.message);
+        queryClient.invalidateQueries({
+          queryKey: ["get-attribute_edit_atom"],
+        });
+      } else {
+        toast.error(response.message);
+      }
+    },
+  });
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    const data: { [key: string]: string | string[] | FormDataEntryValue } =
+      Object.fromEntries(new FormData(e.currentTarget as HTMLFormElement));
+
+    // append the selected resource for each relation to the formdata
+    for (const relation of relations) {
+      data[relation.name] = relation.value.map((r) => r.value) as string[];
+    }
+
+    const values = [];
+    for (const v of Object.keys(data)) {
+      values.push({
+        name: v,
+        value: data[v],
+      });
+    }
+    if (params.resourceId)
+      mutate({ values, resourceId: parseInt(params.resourceId) });
   }
 
   useEffect(() => {
@@ -83,7 +115,7 @@ export default function EditItem() {
                       data?.id.toString() +
                       "-" +
                       Object.keys(atomValues)
-                        .map((k) => `${k}-${atomValues[k]}`)
+                        .map((k) => `${k}|${atomValues[k]}`)
                         .join("-"),
                     value: v,
                   };
@@ -93,19 +125,22 @@ export default function EditItem() {
           ]);
         }
       }
+      setRelationsSet(true);
     }
   }, [isFetching, data, attributes]);
 
   return (
     <div className="w-full p-4">
+      <h2 className="font-semibold text-xl text-gray-700 pb-4 border-b mb-4">
+        Edit resource atom
+      </h2>
       {isFetching ||
       fetchingAttributes ||
       // wait until all the realtions a set
-      (attributes?.find((a) => a.type === "RESOURCE") &&
-        relations.length === 0) ? (
+      (attributes?.find((a) => a.type === "RESOURCE") && !relationsSet) ? (
         <Loader message="Loading atom data" />
       ) : (
-        <form className="w-full">
+        <form onSubmit={handleSubmit} className="w-full">
           {attributes?.map((attribute: TResourceAttribute) => {
             return attribute.type === "RESOURCE" ? (
               // for relations
@@ -130,6 +165,11 @@ export default function EditItem() {
               />
             );
           })}
+          <div className="px-4 w-full">
+            <Button className="mt-2 w-full" disabled={status == "pending"}>
+              {status === "pending" ? <Loader /> : "Save Changes"}
+            </Button>
+          </div>
         </form>
       )}
     </div>

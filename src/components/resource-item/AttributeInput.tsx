@@ -13,8 +13,6 @@ import axios from "axios";
 import Loader from "../loader";
 import DropdownWithSearch, { TDropdownSelectItem } from "./SearchDropdown";
 import { SetStateAction, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-
 export default function AttributeInput({
   attribute,
   setRelations,
@@ -34,10 +32,13 @@ export default function AttributeInput({
   mode?: "edit" | "add";
   relations?: { name: string; value: TDropdownSelectItem[] }[];
 }) {
-  const params = useParams();
-
   const [selectedItems, setSelectedItems] = useState<TDropdownSelectItem[]>(
-    mode === "edit" && relations ? relations?.map((r) => r.value).flat() : []
+    mode === "edit" && relations
+      ? relations
+          ?.filter((r) => r.name === attribute.name)
+          .map((r) => r.value)
+          .flat()
+      : []
   );
   const [useAllResourceItems, setUseAllResourceItems] =
     useState<boolean>(false);
@@ -47,7 +48,7 @@ export default function AttributeInput({
     async queryFn() {
       return (
         await axios.get(
-          `http://localhost:3000/resource/by-id/${params.resourceId}?atoms=true`
+          `http://localhost:3000/resource/by-id/${attribute.relationId}?atoms=true`
         )
       ).data;
     },
@@ -60,17 +61,25 @@ export default function AttributeInput({
       if (useAllResourceItems) {
         setRelations((prev) => prev.filter((p) => p.name !== attribute.name));
       } else {
-        // add updated
         if (selectedItems.length > 0) {
-          setRelations((prev) => {
-            return prev.map((p) => {
-              if (p.name === attribute.name) {
-                p = { ...p, value: selectedItems };
-              }
+          const present = relations?.find((r) => r.name === attribute.name);
+          if (present) {
+            // add updated
+            setRelations((prev) => {
+              return prev.map((p) => {
+                if (p.name === attribute.name) {
+                  p = { ...p, value: selectedItems };
+                }
 
-              return p;
+                return p;
+              });
             });
-          });
+          } else {
+            setRelations((prev) => [
+              ...prev,
+              { name: attribute.name, value: selectedItems },
+            ]);
+          }
         }
       }
     }
@@ -175,32 +184,36 @@ export default function AttributeInput({
           />
         )
       ) : mode && mode === "edit" && initialValue && setInitialValues ? (
-        <Input
-          value={initialValue.value}
-          onChange={(e) => {
-            setInitialValues((prev) => {
-              return prev.map((p) => {
-                if (p.name === initialValue.name) {
-                  p.value = e.target.value;
-                }
-                return p;
+        <div className="w-full px-4">
+          <Input
+            value={initialValue.value}
+            onChange={(e) => {
+              setInitialValues((prev) => {
+                return prev.map((p) => {
+                  if (p.name === initialValue.name) {
+                    p.value = e.target.value;
+                  }
+                  return p;
+                });
               });
-            });
-          }}
-          name={attribute.name}
-          id={attribute.id.toString()}
-          type="text"
-          placeholder={attribute.name}
-          required
-        />
+            }}
+            name={attribute.name}
+            id={attribute.id.toString()}
+            type="text"
+            placeholder={attribute.name}
+            required
+          />
+        </div>
       ) : (
-        <Input
-          name={attribute.name}
-          id={attribute.id.toString()}
-          type="text"
-          placeholder={attribute.name}
-          required
-        />
+        <div className="w-full px-4">
+          <Input
+            name={attribute.name}
+            id={attribute.id.toString()}
+            type="text"
+            placeholder={attribute.name}
+            required
+          />
+        </div>
       )}
     </div>
   );
