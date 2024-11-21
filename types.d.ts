@@ -49,5 +49,11 @@ export type TResourceAtom = {
   resourceId: number;
 };
 
+export type TRole = {
+  createdAt: string,
+  id: number,
+  name:string
+}
+
 export type TRelationType = 'OTO' | "OTM";
 export type TAttributeType = "ALPHANUM" | "MEDIA" | "RESOURCE";

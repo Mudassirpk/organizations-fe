@@ -1,6 +1,6 @@
 import { TResourceAtom, TResourceAttribute } from "types";
 import { TableCell, TableRow } from "../ui/table";
-import { ExternalLink, Edit } from "lucide-react";
+import {ExternalLink, Edit } from "lucide-react";
 import { Link } from "react-router-dom";
 import DeleteAtom from "./deleteAtom";
 
@@ -48,7 +48,7 @@ export default function ResourceAtomRow({
               className="text-gray-700"
             />
           </Link>{" "}
-          <DeleteAtom atomId={ra.id} />
+          <DeleteAtom  atomId={ra.id} />
         </div>
       </TableCell>
     </TableRow>

@@ -1,5 +1,6 @@
-import { Home, PlusIcon } from "lucide-react";
+import {CircleUserRound, Home, Lock, PlusIcon, Users} from "lucide-react";
 import { Component } from "lucide-react";
+
 
 export const sidebarLinks = [
   {
@@ -20,6 +21,40 @@ export const sidebarLinks = [
       {
         name: "Add Resource",
         path: "/add-resource",
+        Icon: PlusIcon,
+      },
+    ],
+  },
+  {
+    name: "Users",
+    link: "/users",
+    icon: Users,
+    children: [
+      {
+        name: "All Users",
+        path: "/users/all-users",
+        Icon: Users,
+      },
+      {
+        name: "Add User",
+        path: "/users/add-user",
+        Icon: PlusIcon,
+      },
+    ],
+  },
+  {
+    name: "Roles and Permissions",
+    link: "/roles-permissions",
+    icon: Lock,
+    children: [
+      {
+        name: "Roles",
+        path: "/roles-permissions/roles",
+        Icon: CircleUserRound,
+      },
+      {
+        name: "Add Role",
+        path: "/users/add-user",
         Icon: PlusIcon,
       },
     ],
