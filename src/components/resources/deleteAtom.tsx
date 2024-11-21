@@ -1,6 +1,6 @@
 import Modal from "../modal";
 import { Button } from "../ui/button";
-import { Loader } from "lucide-react";
+import {Loader, Trash} from "lucide-react";
 import { queryClient } from "@/lib/query_client";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
@@ -25,7 +25,7 @@ function DeleteAtom({ atomId }: { atomId: number }) {
   });
 
   return (
-    <Modal open={open} setOpen={setOpen} title="Delete" triggerTitle="Delete">
+    <Modal customTrigger={<Trash className={'text-2xl text-red-600 hover:text-red-500'} />} open={open} setOpen={setOpen} title="Delete" triggerTitle="Delete">
       <p>Do you really want to delete this atom</p>
       <div className="w-full flex justify-end gap-2 items-center">
         <Button variant={"ghost"} onClick={() => setOpen(false)}>
