@@ -2,6 +2,7 @@ import Loader from "@/components/loader";
 import AttributeInput from "@/components/resource-item/AttributeInput";
 import { TDropdownSelectItem } from "@/components/resource-item/SearchDropdown";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React, { useEffect } from "react";
@@ -55,6 +56,11 @@ export default function EditItem() {
   useEffect(() => {
     if (data && !isFetching && attributes) {
       const atomValues = data?.data;
+
+      // first empty the relations
+      setRelations([]);
+
+      // set the initial relations and ALPHANUM values
       for (const attribute of attributes) {
         if (attribute.type === "ALPHANUM") {
           setInitialValues((prev) => [
@@ -92,68 +98,39 @@ export default function EditItem() {
 
   return (
     <div className="w-full p-4">
-      {isFetching && fetchingAttributes ? (
-        <Loader />
-      ) : attributes?.filter((a) => a.type === "RESOURCE")?.length &&
-        attributes?.filter((a) => a.type === "RESOURCE")?.length > 0 ? (
-        relations &&
-        relations.length && (
-          <div className="w-full">
-            <h2 className="font-semibold text-xl">
-              Edit {data?.resource.name} Atom
-            </h2>
-            <form onSubmit={handleSubmit} className="my-4 flex flex-col gap-2">
-              {attributes?.map((attribute, i: number) => {
-                return (
-                  <React.Fragment key={attribute.id}>
-                    <AttributeInput
-                      relations={relations}
-                      setRelations={setRelations}
-                      attribute={attribute}
-                      initialValue={initialValues.find(
-                        (iv) => iv.name === attribute.name
-                      )}
-                      setInitialValues={setInitialValues}
-                      mode="edit"
-                    />
-                    {i !== attributes.length - 1 && (
-                      <p className="w-full border-b my-2"></p>
-                    )}
-                  </React.Fragment>
-                );
-              })}
-              <Button type="submit">Save Changes</Button>
-            </form>
-          </div>
-        )
+      {isFetching ||
+      fetchingAttributes ||
+      // wait until all the realtions a set
+      (attributes?.find((a) => a.type === "RESOURCE") &&
+        relations.length === 0) ? (
+        <Loader message="Loading atom data" />
       ) : (
-        <div className="w-full">
-          <h2 className="font-semibold text-xl">
-            Edit {data?.resource.name} Atom
-          </h2>
-          <form onSubmit={handleSubmit} className="my-4 flex flex-col gap-2">
-            {attributes?.map((attribute, i: number) => {
-              return (
-                <React.Fragment key={attribute.id}>
-                  <AttributeInput
-                    relations={relations}
-                    setRelations={setRelations}
-                    attribute={attribute}
-                    initialValue={initialValues.find(
-                      (iv) => iv.name === attribute.name
-                    )}
-                    setInitialValues={setInitialValues}
-                    mode="edit"
-                  />
-                  {i !== attributes.length - 1 && (
-                    <p className="w-full border-b my-2"></p>
-                  )}
-                </React.Fragment>
-              );
-            })}
-            <Button type="submit">Save Changes</Button>
-          </form>
-        </div>
+        <form className="w-full">
+          {attributes?.map((attribute: TResourceAttribute) => {
+            return attribute.type === "RESOURCE" ? (
+              // for relations
+              <AttributeInput
+                attribute={attribute}
+                key={attribute.id}
+                mode="edit"
+                relations={relations}
+                setRelations={setRelations}
+              />
+            ) : (
+              // for normal ALPHANUM input
+              <AttributeInput
+                attribute={attribute}
+                key={attribute.id}
+                mode="edit"
+                setRelations={setRelations}
+                initialValue={initialValues.find(
+                  (iv) => iv.name === attribute.name
+                )}
+                setInitialValues={setInitialValues}
+              />
+            );
+          })}
+        </form>
       )}
     </div>
   );
