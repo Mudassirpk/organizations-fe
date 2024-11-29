@@ -15,5 +15,5 @@ export default function AxiosProvider({children}: { children: React.ReactNode })
     setTokenAdded(true)
   }, []);
 
-  return !tokenAdded ? <Loader/> : children
+  return !tokenAdded ? <Loader /> : children
 }

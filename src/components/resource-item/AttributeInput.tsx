@@ -11,7 +11,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import Loader from "../loader";
 import DropdownWithSearch, { TDropdownSelectItem } from "./SearchDropdown";
-import { SetStateAction, useEffect, useState } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import {httpCommon} from "@/lib/httpCommon.ts";
 export default function AttributeInput({
   attribute,
