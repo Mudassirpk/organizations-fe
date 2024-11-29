@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import { TResource, TResourceAtom } from "types";
 import {
   Table,
@@ -11,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Link } from "react-router-dom";
 import ResourceAtomRow from "@/components/resources/resourceAtomRow";
+import {httpCommon} from "@/lib/httpCommon.ts";
 
 export default function ResourceDetails() {
   const params = useParams();
@@ -23,8 +23,8 @@ export default function ResourceDetails() {
     queryKey: ["get-resource-details", params.resourceId],
     async queryFn() {
       return (
-        await axios.get(
-          `http://localhost:3000/resource/by-id/${params.resourceId}?atoms=true&attributes=true`
+        await httpCommon.get(
+          `resource/by-id/${params.resourceId}?atoms=true&attributes=true`
         )
       ).data;
     },

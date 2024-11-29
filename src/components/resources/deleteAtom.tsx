@@ -3,16 +3,16 @@ import { Button } from "../ui/button";
 import {Loader, Trash} from "lucide-react";
 import { queryClient } from "@/lib/query_client";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { useState } from "react";
+import {httpCommon} from "@/lib/httpCommon.ts";
 
 function DeleteAtom({ atomId }: { atomId: number }) {
   const [open, setOpen] = useState(false);
 
   const { mutate: deleteAtom, status } = useMutation({
     async mutationFn(atomId: number) {
-      return (await axios.delete(`http://localhost:3000/atom/${atomId}`)).data;
+      return (await httpCommon.delete(`atom/${atomId}`)).data;
     },
     onSuccess(response) {
       if (response.success) {

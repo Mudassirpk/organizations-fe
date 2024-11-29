@@ -4,10 +4,10 @@ import { Label } from "@/components/ui/label.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { queryClient } from "@/lib/query_client.ts";
 import { useAuth } from "@/store/contexts/context";
+import {httpCommon} from "@/lib/httpCommon.ts";
 
 export default function AddRoleModal() {
   const [open, setOpen] = React.useState(false);
@@ -15,7 +15,7 @@ export default function AddRoleModal() {
 
   const { mutate, status } = useMutation({
     async mutationFn(data: { roleName: string; organizationId?: number }) {
-      return (await axios.post("http://localhost:3000/role", data)).data;
+      return (await httpCommon.post("http://localhost:3000/role", data)).data;
     },
     onSuccess(response) {
       if (response.success) {

@@ -4,12 +4,12 @@ import { TDropdownSelectItem } from "@/components/resource-item/SearchDropdown";
 import { Button } from "@/components/ui/button";
 import { queryClient } from "@/lib/query_client";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { useEffect } from "react";
 import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { TResource, TResourceAtom, TResourceAttribute } from "types";
+import {httpCommon} from "@/lib/httpCommon.ts";
 
 export default function EditItem() {
   const params = useParams();
@@ -28,7 +28,7 @@ export default function EditItem() {
   >({
     queryKey: ["get-atom-to-edit"],
     async queryFn() {
-      return (await axios.get(`http://localhost:3000/atom/${params.atomId}`))
+      return (await httpCommon.get(`atom/${params.atomId}`))
         .data;
     },
   });
@@ -39,8 +39,8 @@ export default function EditItem() {
     queryKey: ["get-attribute_edit_atom"],
     async queryFn() {
       return (
-        await axios.get(
-          `http://localhost:3000/resource/attribute/${params.resourceId}`
+        await httpCommon.get(
+          `resource/attribute/${params.resourceId}`
         )
       ).data;
     },
@@ -49,7 +49,7 @@ export default function EditItem() {
   const { mutate, status } = useMutation({
     async mutationFn(data: unknown) {
       return (
-        await axios.put(`http://localhost:3000/atom/${params.atomId}`, data)
+        await httpCommon.put(`atom/${params.atomId}`, data)
       ).data;
     },
     onSuccess(response) {

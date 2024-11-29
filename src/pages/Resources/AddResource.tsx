@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/select";
 import { useAuth } from "@/store/contexts/context";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { Plus, SquareX } from "lucide-react";
 import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
 import { TResource } from "types";
+import {httpCommon} from "@/lib/httpCommon.ts";
 
 export default function AddResource() {
   const { user } = useAuth();
@@ -30,7 +30,7 @@ export default function AddResource() {
   const { mutate, status } = useMutation({
     async mutationFn() {
       return (
-        await axios.post(
+        await httpCommon.post(
           "http://localhost:3000/resource/",
           {
             name: name,
@@ -63,7 +63,7 @@ export default function AddResource() {
   const { data: resources, isFetching: fetchingResources } = useQuery<TResource[]>({
     queryKey: ['resources-for-select'],
     async queryFn() {
-      return (await axios.get(`http://localhost:3000/resource/${user?.user_organization[0].organizationId}`)).data
+      return (await httpCommon.get(`http://localhost:3000/resource/${user?.user_organization[0].organizationId}`)).data
     }
   })
 

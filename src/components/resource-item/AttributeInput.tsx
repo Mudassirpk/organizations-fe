@@ -9,10 +9,10 @@ import {
   SelectContent,
 } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import Loader from "../loader";
 import DropdownWithSearch, { TDropdownSelectItem } from "./SearchDropdown";
 import { SetStateAction, useEffect, useState } from "react";
+import {httpCommon} from "@/lib/httpCommon.ts";
 export default function AttributeInput({
   attribute,
   setRelations,
@@ -47,7 +47,7 @@ export default function AttributeInput({
     queryKey: ["attribute-relation-resource"],
     async queryFn() {
       return (
-        await axios.get(
+        await httpCommon.get(
           `http://localhost:3000/resource/by-id/${attribute.relationId}?atoms=true`
         )
       ).data;

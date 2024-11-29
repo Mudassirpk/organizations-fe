@@ -14,8 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import toast from "react-hot-toast";
+import {httpCommon} from "@/lib/httpCommon.ts";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ export default function SignUp() {
   const { mutate, status } = useMutation({
     async mutationFn() {
       return (
-        await axios.post("http://localhost:3000/auth/register", {
+        await httpCommon.post("auth/register", {
           name: data.name,
           email: data.email,
           password: data.password,

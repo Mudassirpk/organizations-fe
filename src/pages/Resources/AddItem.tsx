@@ -2,11 +2,11 @@ import AttributeInput from "@/components/resource-item/AttributeInput";
 import { TDropdownSelectItem } from "@/components/resource-item/SearchDropdown";
 import { Button } from "@/components/ui/button";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { TResource } from "types";
+import {httpCommon} from "@/lib/httpCommon.ts";
 
 export default function AddItem() {
   const params = useParams();
@@ -19,7 +19,7 @@ export default function AddItem() {
     queryKey: ["get-resource-details_add_item"],
     async queryFn() {
       return (
-        await axios.get(
+        await httpCommon.get(
           `http://localhost:3000/resource/by-id/${params.resourceId}?atoms=true&attributes=true`
         )
       ).data;
@@ -28,7 +28,7 @@ export default function AddItem() {
 
   const { mutate } = useMutation({
     async mutationFn(data: unknown) {
-      return (await axios.post("http://localhost:3000/resource/item", data))
+      return (await httpCommon.post("http://localhost:3000/resource/item", data))
         .data;
     },
     onSuccess(response) {

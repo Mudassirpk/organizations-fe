@@ -11,12 +11,12 @@ import {
 } from "@/components/ui/select";
 import { useAuth } from "@/store/contexts/context";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { Plus, SquareX } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { TAttributeType, TRelationType, TResource } from "types";
+import {httpCommon} from "@/lib/httpCommon.ts";
 
 export default function EditResource() {
   const { user } = useAuth();
@@ -42,7 +42,7 @@ export default function EditResource() {
       }
 
       return (
-        await axios.post(
+        await httpCommon.post(
           "http://localhost:3000/resource/update",
           {
             name: name,
@@ -72,7 +72,7 @@ export default function EditResource() {
     queryKey: ["resources-for-select"],
     async queryFn() {
       return (
-        await axios.get(
+        await httpCommon.get(
           `http://localhost:3000/resource/${user?.user_organization[0].organizationId}`
         )
       ).data;
@@ -84,7 +84,7 @@ export default function EditResource() {
       queryKey: ["get-resource-to-edit"],
       async queryFn() {
         return (
-          await axios.get(
+          await httpCommon.get(
             `http://localhost:3000/resource/by-id/${params.resourceId}?attributes=true&atoms=true`
           )
         ).data;

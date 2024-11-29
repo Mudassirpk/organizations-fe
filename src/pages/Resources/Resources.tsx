@@ -2,8 +2,8 @@ import Resource from "@/components/resources/resource";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/store/contexts/context";
-import axios from "axios";
 import { TResource } from "types";
+import {httpCommon} from "@/lib/httpCommon.ts";
 
 export default function Resources() {
   const { user } = useAuth();
@@ -12,8 +12,8 @@ export default function Resources() {
     queryKey: ["get-resources"],
     async queryFn() {
       return (
-        await axios.get(
-          `http://localhost:3000/resource/${user?.user_organization[0].organization.id}?attributes=true&atoms=true`
+        await httpCommon.get(
+          `resource/${user?.user_organization[0].organization.id}?attributes=true&atoms=true`
         )
       ).data;
     },

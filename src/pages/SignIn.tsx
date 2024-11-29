@@ -15,8 +15,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import toast from "react-hot-toast";
+import {httpCommon} from "@/lib/httpCommon.ts";
 
 export default function SignIn() {
   const [data, setData] = useState({
@@ -31,7 +31,7 @@ export default function SignIn() {
 
   const { mutate, status } = useMutation({
     async mutationFn() {
-      return (await axios.post("http://localhost:3000/auth/login", data)).data;
+      return (await httpCommon.post("auth/login", data)).data;
     },
     onSuccess(data) {
       if (data.success) {
