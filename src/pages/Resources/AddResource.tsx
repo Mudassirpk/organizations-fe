@@ -31,7 +31,7 @@ export default function AddResource() {
     async mutationFn() {
       return (
         await httpCommon.post(
-          "http://localhost:3000/resource/",
+          "resource/",
           {
             name: name,
             attributes,
@@ -63,7 +63,7 @@ export default function AddResource() {
   const { data: resources, isFetching: fetchingResources } = useQuery<TResource[]>({
     queryKey: ['resources-for-select'],
     async queryFn() {
-      return (await httpCommon.get(`http://localhost:3000/resource/${user?.user_organization[0].organizationId}`)).data
+      return (await httpCommon.get(`resource/${user?.user_organization[0].organizationId}`)).data
     }
   })
 

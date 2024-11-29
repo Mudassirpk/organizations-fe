@@ -48,7 +48,7 @@ export default function AttributeInput({
     async queryFn() {
       return (
         await httpCommon.get(
-          `http://localhost:3000/resource/by-id/${attribute.relationId}?atoms=true`
+          `resource/by-id/${attribute.relationId}?atoms=true`
         )
       ).data;
     },

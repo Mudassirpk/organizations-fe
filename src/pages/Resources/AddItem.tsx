@@ -20,7 +20,7 @@ export default function AddItem() {
     async queryFn() {
       return (
         await httpCommon.get(
-          `http://localhost:3000/resource/by-id/${params.resourceId}?atoms=true&attributes=true`
+          `resource/by-id/${params.resourceId}?atoms=true&attributes=true`
         )
       ).data;
     },
@@ -28,7 +28,7 @@ export default function AddItem() {
 
   const { mutate } = useMutation({
     async mutationFn(data: unknown) {
-      return (await httpCommon.post("http://localhost:3000/resource/item", data))
+      return (await httpCommon.post("resource/item", data))
         .data;
     },
     onSuccess(response) {

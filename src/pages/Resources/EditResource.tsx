@@ -43,7 +43,7 @@ export default function EditResource() {
 
       return (
         await httpCommon.post(
-          "http://localhost:3000/resource/update",
+          "resource/update",
           {
             name: name,
             attributes,
@@ -73,7 +73,7 @@ export default function EditResource() {
     async queryFn() {
       return (
         await httpCommon.get(
-          `http://localhost:3000/resource/${user?.user_organization[0].organizationId}`
+          `resource/${user?.user_organization[0].organizationId}`
         )
       ).data;
     },
@@ -85,7 +85,7 @@ export default function EditResource() {
       async queryFn() {
         return (
           await httpCommon.get(
-            `http://localhost:3000/resource/by-id/${params.resourceId}?attributes=true&atoms=true`
+            `resource/by-id/${params.resourceId}?attributes=true&atoms=true`
           )
         ).data;
       },

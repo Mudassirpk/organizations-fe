@@ -15,7 +15,7 @@ export default function AddRoleModal() {
 
   const { mutate, status } = useMutation({
     async mutationFn(data: { roleName: string; organizationId?: number }) {
-      return (await httpCommon.post("http://localhost:3000/role", data)).data;
+      return (await httpCommon.post("role", data)).data;
     },
     onSuccess(response) {
       if (response.success) {
