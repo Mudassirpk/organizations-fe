@@ -2,7 +2,8 @@ import React from 'react'
 import { TUser } from '../../../types';
 
 export type TAuthContext = {
-  user: TUser | null
+  user: TUser | null;
+  token: string
 }
 
 export const authContext = React.createContext<null | TAuthContext>(null);
