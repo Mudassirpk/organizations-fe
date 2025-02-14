@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/store/contexts/context";
 import { TResource } from "types";
-import {httpCommon} from "@/lib/httpCommon.ts";
+import { httpCommon } from "@/lib/httpCommon.ts";
 
 export default function Resources() {
   const { user } = useAuth();
@@ -17,9 +17,8 @@ export default function Resources() {
         )
       ).data;
     },
+    enabled: user !== null
   });
-
-  console.log(data);
 
   return (
     <div>
