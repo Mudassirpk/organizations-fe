@@ -15,18 +15,16 @@ import { Plus, SquareX } from "lucide-react";
 import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
 import { TResource } from "types";
-import {httpCommon} from "@/lib/httpCommon.ts";
+import { httpCommon } from "@/lib/httpCommon.ts";
 
 export default function AddResource() {
   const { user } = useAuth();
-
 
 
   const [name, setName] = useState<string>("");
   const [attributes, setAttributes] = useState<
     { name: string; type: "ALPHANUM" | "MEDIA" | "RESOURCE", relationType?: "OTM" | "OTO", relationId?: number }[]
   >([{ name: "", type: "ALPHANUM" }]);
-
   const { mutate, status } = useMutation({
     async mutationFn() {
       return (
@@ -37,11 +35,7 @@ export default function AddResource() {
             attributes,
             organizationId: user?.user_organization[0].organizationId,
           },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
+
         )
       ).data;
     },
@@ -64,7 +58,8 @@ export default function AddResource() {
     queryKey: ['resources-for-select'],
     async queryFn() {
       return (await httpCommon.get(`resource/${user?.user_organization[0].organizationId}`)).data
-    }
+    },
+    enabled: user !== null
   })
 
   return (
